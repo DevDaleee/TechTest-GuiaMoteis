@@ -1,14 +1,11 @@
-class CategoryItemModels {
+class CategoryItemModel {
   String? name;
   String? iconUrl;
 
-  CategoryItemModels({
-    this.name,
-    this.iconUrl,
-  });
+  CategoryItemModel({this.name, this.iconUrl});
 
-  factory CategoryItemModels.fromJson(Map<String, dynamic> json) {
-    return CategoryItemModels(
+  factory CategoryItemModel.fromJson(Map<String, dynamic> json) {
+    return CategoryItemModel(
       name: json['nome'] as String?,
       iconUrl: json['icone'] as String?,
     );

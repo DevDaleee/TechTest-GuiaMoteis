@@ -1,28 +1,29 @@
 class PeriodModel {
-  String? formattertime;
+  String? formattedTime;
   String? time;
-  double? priece;
-  double? totalPriece;
-  bool? hasCortesy;
+  double? price;
+  double? totalPrice;
+  bool? hasCourtesy;
   double? discount;
 
   PeriodModel({
-    this.formattertime,
+    this.formattedTime,
     this.time,
-    this.priece,
-    this.totalPriece,
-    this.hasCortesy,
+    this.price,
+    this.totalPrice,
+    this.hasCourtesy,
     this.discount,
   });
 
   factory PeriodModel.fromJson(Map<String, dynamic> json) {
     return PeriodModel(
-      formattertime: json['tempoFormatado'] as String?,
+      formattedTime: json['tempoFormatado'] as String?,
       time: json['tempo'] as String?,
-      priece: json['valor'] as double?,
-      totalPriece: json['valorTotal'] as double?,
-      hasCortesy: json['temCortesia'] as bool?,
-      discount: (json['desconto'] != null && json['desconto'] is Map<String, dynamic>)
+      price: (json['valor'] as num?)?.toDouble(),
+      totalPrice: (json['valorTotal'] as num?)?.toDouble(),
+      hasCourtesy: json['temCortesia'] as bool?,
+      discount:
+          (json['desconto'] != null && json['desconto'] is Map<String, dynamic>)
               ? (json['desconto']['desconto'] as num?)?.toDouble()
               : null,
     );
