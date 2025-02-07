@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/home',
         routes: namedRoutes,
-        color: Color(0xFFd11621),
       ),
     );
   }

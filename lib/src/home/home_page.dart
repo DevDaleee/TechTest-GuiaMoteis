@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:techtest_guia_motel/models/motel_model.dart';
 import 'package:techtest_guia_motel/services/moteis.dart';
-import 'package:techtest_guia_motel/src/home/components/filter_options.dart';
+import 'package:techtest_guia_motel/src/home/components/custom_app_bar.dart';
+import 'package:techtest_guia_motel/src/home/components/custom_drawer.dart';
 import 'package:techtest_guia_motel/src/home/components/hotel_card.dart';
 import 'package:techtest_guia_motel/src/home/components/location_filter.dart';
 import 'package:techtest_guia_motel/src/home/components/promo_card.dart';
-import 'package:techtest_guia_motel/src/home/components/tiles.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -58,186 +58,161 @@ class HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    await fetchMotels();
+    await Future.delayed(Duration(seconds: 5));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFd11621),
-      ),
-      drawer: Drawer(
-        surfaceTintColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.zero),
-        ),
-        backgroundColor: Color(0xFFFFF8F6),
-        width: MediaQuery.of(context).size.width * 0.8,
-        child: Expanded(
-          child: Column(
-            children: [
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFFF524c),
-                      Color(0xFFFD2D50),
-                    ],
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
+      body: Stack(
+        children: [
+          RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Flex(
+                direction: Axis.vertical,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 60,
+                    color: Color(0xFFd11621),
+                    child: LocationFilter(),
                   ),
-                ),
-                child: SafeArea(
-                  child: Column(
-                    spacing: 10,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SizedBox(width: 5),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            SizedBox(width: 6),
-                            Icon(
-                              Icons.check_box_rounded,
-                              color: Colors.white,
-                              size: 30,
+                  Expanded(
+                    flex: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      height: MediaQuery.of(context).size.height,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 250,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: motelsWithDiscount!.length,
+                              itemBuilder: (context, index) {
+                                final motel = motelsWithDiscount![index];
+                                final discount = motel.suites![index].periods
+                                    ?.firstWhere((p) =>
+                                        p.discount != null && p.discount! > 0)
+                                    .discount;
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: PromoCard(
+                                    imageUrl: motel.imageUrl,
+                                    name: motel.name,
+                                    location: motel.neighborhood,
+                                    discount: discount,
+                                  ),
+                                );
+                              },
                             ),
-                            Text(
-                              'go fidelidade',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 30,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  FilterChip(
+                                      label: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.tune,
+                                            color: Colors.black.withAlpha(
+                                              150,
+                                            ),
+                                          ),
+                                          Text("filtros"),
+                                        ],
+                                      ),
+                                      onSelected: (_) {}),
+                                  SizedBox(width: 8),
+                                  FilterChip(
+                                      label: Text("com desconto"),
+                                      onSelected: (_) {}),
+                                  SizedBox(width: 8),
+                                  FilterChip(
+                                      label: Text("disponíveis"),
+                                      onSelected: (_) {}),
+                                  SizedBox(width: 8),
+                                  FilterChip(
+                                      label: Text("hidro"), onSelected: (_) {}),
+                                ],
                               ),
                             ),
-                            SizedBox(width: 10),
-                            Icon(
-                              Icons.arrow_right_rounded,
-                              color: Colors.white,
-                              size: 25,
-                            )
-                          ],
-                        ),
+                          ),
+                          Divider(
+                            color: Colors.grey.withAlpha(60),
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: motels.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                child: HotelCard(
+                                  filter: "",
+                                  motel: motels[index],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Acumule selinhos e troque por reservas\ngrátis. vale em todos os motéis e horários',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  DrawerTile(
-                    icon: Icons.person_outline_rounded,
-                    text: "Login",
-                  ),
-                  DrawerTile(
-                    icon: Icons.support_outlined,
-                    text: "Ajuda",
-                  ),
-                  DrawerTile(
-                    icon: Icons.settings_outlined,
-                    text: "Configurações",
-                  ),
-                  DrawerTile(
-                    icon: Icons.bug_report_outlined,
-                    text: "Comunicar Problema",
-                  ),
-                  DrawerTile(
-                    icon: Icons.campaign_outlined,
-                    text: "Tem um motel? Faça parte",
+                    ),
                   ),
                 ],
-              )
-            ],
+              ),
+            ),
           ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Center(
-                child: LocationFilter(),
-              ),
-            ),
-            SizedBox(height: 10),
-            SizedBox(
-              height: 250,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: motelsWithDiscount!.length,
-                itemBuilder: (context, index) {
-                  final motel = motelsWithDiscount![index];
-                  final discount = motel.suites![index].periods
-                      ?.firstWhere((p) => p.discount != null && p.discount! > 0)
-                      .discount;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: PromoCard(
-                      imageUrl: motel.imageUrl,
-                      name: motel.name,
-                      location: motel.neighborhood,
-                      discount: discount,
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    FilterChip(
-                        label: Row(
-                          children: [
-                            Icon(
-                              Icons.tune,
-                              color: Colors.black.withAlpha(
-                                150,
-                              ),
-                            ),
-                            Text("filtros"),
-                          ],
-                        ),
-                        onSelected: (_) {}),
-                    SizedBox(width: 8),
-                    FilterChip(label: Text("com desconto"), onSelected: (_) {}),
-                    SizedBox(width: 8),
-                    FilterChip(label: Text("disponíveis"), onSelected: (_) {}),
-                    SizedBox(width: 8),
-                    FilterChip(label: Text("hidro"), onSelected: (_) {}),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: motels.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  child: HotelCard(
-                    filter: "",
-                    motel: motels[index],
+          Positioned(
+            bottom: 20,
+            left: MediaQuery.of(context).size.width * 0.25,
+            right: MediaQuery.of(context).size.width * 0.25,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    spreadRadius: 2,
                   ),
-                );
-              },
+                ],
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.map, color: Colors.red),
+                  SizedBox(width: 5),
+                  Text(
+                    'Mapa',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
