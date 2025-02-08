@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:techtest_guia_motel/models/motel_model.dart';
 import 'package:techtest_guia_motel/services/moteis.dart';
@@ -18,6 +19,9 @@ class HomePageState extends State<HomePage> {
   List<MotelModel> motels = [];
   List<MotelModel>? motelsWithDiscount = [];
   String selectedFilter = "";
+  int carouselLenght = 0;
+  int carouselCurrent = 0;
+  final CarouselSliderController _controller = CarouselSliderController();
 
   @override
   void initState() {
@@ -45,6 +49,9 @@ class HomePageState extends State<HomePage> {
                   false) ??
               false)
           .toList();
+
+      carouselLenght = motelsWithDiscount!.length;
+      carouselCurrent = carouselLenght ~/ 2;
 
       setState(() {});
     } catch (e) {
@@ -94,28 +101,60 @@ class HomePageState extends State<HomePage> {
                       height: MediaQuery.of(context).size.height,
                       child: Column(
                         children: [
-                          SizedBox(
-                            height: 250,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: motelsWithDiscount!.length,
-                              itemBuilder: (context, index) {
-                                final motel = motelsWithDiscount![index];
-                                final discount = motel.suites![index].periods
-                                    ?.firstWhere((p) =>
-                                        p.discount != null && p.discount! > 0)
-                                    .discount;
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: PromoCard(
-                                    imageUrl: motel.imageUrl,
-                                    name: motel.name,
-                                    location: motel.neighborhood,
-                                    discount: discount,
-                                  ),
-                                );
+                          CarouselSlider.builder(
+                            carouselController: _controller,
+                            options: CarouselOptions(
+                              height: 200,
+                              viewportFraction: 4,
+                              enableInfiniteScroll: false,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  carouselCurrent = index;
+                                });
                               },
+                            ),
+                            itemCount: motelsWithDiscount!.length,
+                            itemBuilder: (BuildContext context, int index, _) {
+                              final motel = motelsWithDiscount![index];
+                              final bestPeriod = motel.suites!
+                                  .expand((suite) => suite.periods!)
+                                  .map((period) {
+                                final discountedPrice = period.discount != null
+                                    ? period.price! - period.discount!
+                                    : period.price;
+                                return {
+                                  "price": discountedPrice,
+                                  "originalPrice": period.price,
+                                  "discount": period.discount ?? 0,
+                                };
+                              }).reduce((curr, next) =>
+                                      curr["price"]! < next["price"]!
+                                          ? curr
+                                          : next);
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                child: PromoCard(
+                                  imageUrl: motel.imageUrl,
+                                  name: motel.name,
+                                  location: motel.neighborhood,
+                                  prcDiscont: bestPeriod["discount"],
+                                  discount: bestPeriod["price"],
+                                ),
+                              );
+                            },
+                          ),
+                          Container(
+                            width: 12,
+                            height: 12,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withAlpha(
+                                carouselLenght == carouselCurrent ? 900 : 400,
+                              ),
                             ),
                           ),
                           Padding(

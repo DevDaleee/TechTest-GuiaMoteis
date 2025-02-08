@@ -1,12 +1,14 @@
 import 'package:animated_emoji/emoji.dart';
 import 'package:animated_emoji/emojis.g.dart';
 import 'package:flutter/material.dart';
+import 'package:techtest_guia_motel/services/utils.dart';
 
 class PromoCard extends StatelessWidget {
   final String? imageUrl;
   final String? name;
   final String? location;
   final double? discount;
+  final double? prcDiscont;
 
   const PromoCard({
     super.key,
@@ -14,12 +16,14 @@ class PromoCard extends StatelessWidget {
     this.name,
     this.location,
     this.discount,
+    this.prcDiscont,
   });
 
   @override
   Widget build(BuildContext context) {
+    UtilsServices utils = UtilsServices();
     return SizedBox(
-      height: 210,
+      height: 220,
       width: MediaQuery.of(context).size.width * 0.99,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -90,7 +94,7 @@ class PromoCard extends StatelessWidget {
                           children: [
                             Text(
                               discount != null
-                                  ? '${discount.toString()} de desconto'
+                                  ? '${prcDiscont!.toStringAsFixed(prcDiscont! % 1 == 0 ? 0 : 1)}% de desconto'
                                   : 'Desconto não informado',
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
@@ -100,7 +104,7 @@ class PromoCard extends StatelessWidget {
                             ),
                             Divider(),
                             Text(
-                              'a partir de R\$ 54,11',
+                              'a partir de ${utils.priceToCurrency(discount!)}',
                               style: TextStyle(
                                   fontSize: 12, color: Colors.black87),
                             ),
@@ -111,6 +115,7 @@ class PromoCard extends StatelessWidget {
                       Align(
                         alignment: Alignment.center,
                         child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.045,
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: () {},
@@ -127,6 +132,7 @@ class PromoCard extends StatelessWidget {
                             ),
                             label: const Text(
                               'reservar',
+                              textAlign: TextAlign.center,
                               style:
                                   TextStyle(color: Colors.white, fontSize: 14),
                             ),
