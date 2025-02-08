@@ -7,6 +7,8 @@ class MotelModel {
   double? distance;
   int? favorites;
   List<SuiteModel>? suites;
+  int? reviews;
+  double? rate;
 
   MotelModel({
     this.name,
@@ -15,6 +17,8 @@ class MotelModel {
     this.distance,
     this.favorites,
     this.suites,
+    this.reviews,
+    this.rate,
   });
 
   factory MotelModel.fromJson(Map<String, dynamic> json) {
@@ -27,6 +31,8 @@ class MotelModel {
       suites: (json['suites'] as List<dynamic>?)
           ?.map((e) => SuiteModel.fromJson(e))
           .toList(),
+      reviews: json['qtdAvaliacoes'] as int?,
+      rate: json['media'] as double?,
     );
   }
 }

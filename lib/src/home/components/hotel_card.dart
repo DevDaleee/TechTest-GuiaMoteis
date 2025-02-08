@@ -64,16 +64,63 @@ class HotelCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        shape: BoxShape.rectangle,
-                        color: Colors.amber,
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.15),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 23,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.all(Radius.circular(6)),
+                          border: Border.all(
+                            color: Colors.amber.shade700,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 3),
+                          child: Row(
+                            spacing: 3,
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors.amber.shade700,
+                                size: 18,
+                              ),
+                              Text(
+                                '${motel.rate}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    )
-                  ],
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        iconAlignment: IconAlignment.end,
+                        icon: Icon(
+                          Icons.keyboard_arrow_down_outlined,
+                        ),
+                        label: Text(
+                          '${motel.reviews} avaliações',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Card(
                   elevation: 0,
