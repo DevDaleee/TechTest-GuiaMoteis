@@ -2,7 +2,7 @@ import 'package:techtest_guia_motel/models/suite_model.dart';
 
 class MotelModel {
   String? name;
-  String? imageUrl;
+  String? logoUrl;
   String? neighborhood;
   double? distance;
   int? favorites;
@@ -12,7 +12,7 @@ class MotelModel {
 
   MotelModel({
     this.name,
-    this.imageUrl,
+    this.logoUrl,
     this.neighborhood,
     this.distance,
     this.favorites,
@@ -24,7 +24,7 @@ class MotelModel {
   factory MotelModel.fromJson(Map<String, dynamic> json) {
     return MotelModel(
       name: json['fantasia'] as String?,
-      imageUrl: json['logo'] as String?,
+      logoUrl: json['logo'] as String?,
       neighborhood: json['bairro'] as String?,
       distance: (json['distancia'] as num?)?.toDouble(),
       favorites: json['qtdFavoritos'] as int?,

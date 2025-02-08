@@ -136,7 +136,7 @@ class HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10.0),
                                 child: PromoCard(
-                                  imageUrl: motel.imageUrl,
+                                  imageUrl: motel.logoUrl,
                                   name: motel.name,
                                   location: motel.neighborhood,
                                   prcDiscont: bestPeriod["discount"],
@@ -220,8 +220,8 @@ class HomePageState extends State<HomePage> {
           ),
           Positioned(
             bottom: 20,
-            left: MediaQuery.of(context).size.width * 0.25,
-            right: MediaQuery.of(context).size.width * 0.25,
+            left: MediaQuery.of(context).size.width * 0.36,
+            right: MediaQuery.of(context).size.width * 0.36,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -234,11 +234,11 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.map, color: Colors.red),
+                  Icon(Icons.map_outlined, color: Colors.red),
                   SizedBox(width: 5),
                   Text(
                     'Mapa',
