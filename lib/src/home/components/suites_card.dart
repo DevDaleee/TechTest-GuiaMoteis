@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:techtest_guia_motel/data/provider/home_page_provider.dart';
+import 'package:techtest_guia_motel/models/item_model.dart';
 import 'package:techtest_guia_motel/models/suite_model.dart';
 import 'package:techtest_guia_motel/services/utils.dart';
 
-class CustomCardSuites extends StatelessWidget {
+class CustomCardSuites extends StatefulWidget {
   final SuiteModel suites;
   final int suitesLenght;
 
@@ -13,6 +18,11 @@ class CustomCardSuites extends StatelessWidget {
     required this.suitesLenght,
   });
 
+  @override
+  State<CustomCardSuites> createState() => _CustomCardSuitesState();
+}
+
+class _CustomCardSuitesState extends State<CustomCardSuites> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -30,14 +40,15 @@ class CustomCardSuites extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 9),
+                  padding: const EdgeInsets.fromLTRB(9, 10, 9, 0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-                    child: suites.photos != null && suites.photos!.isNotEmpty
+                    child: widget.suites.photos != null &&
+                            widget.suites.photos!.isNotEmpty
                         ? Image.network(
-                            suites.photos!.first,
+                            widget.suites.photos!.first,
                             height: 200,
-                            width: 285,
+                            width: 260,
                             fit: BoxFit.cover,
                           )
                         : Container(
@@ -48,37 +59,48 @@ class CustomCardSuites extends StatelessWidget {
                           ),
                   ),
                 ),
-                Text(
-                  suites.name ?? 'Suíte sem nome',
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  child: Text(
+                    widget.suites.name ?? 'Suíte sem nome',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-                if (suitesLenght <= 2)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/siren.svg',
-                        height: 20,
-                        width: 20,
-                      ),
-                      const Text(
-                        'só mais 2 pelo app',
-                        style: TextStyle(
-                          color: Color(0xFFd11621),
-                          fontWeight: FontWeight.bold,
+                if (widget.suites.quantity! <= 2)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/siren.svg',
+                          height: 15,
+                          width: 15,
                         ),
-                      ),
-                    ],
+                        Text(
+                          'só mais ${widget.suites.quantity!} pelo app',
+                          style: TextStyle(
+                            color: Color(0xFFd11621),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
               ],
             ),
           ),
-          _buildFeatureCard(Icons.wifi),
+          _buildFeatureCard(
+            context,
+            widget.suites.items!,
+          ),
           //TODO CONSERTAR ESSA MERDA AQUI VSFF EU TE ODEIO CARD DE MERDA
           // ListView.builder(
           //   shrinkWrap: true,
@@ -96,22 +118,72 @@ class CustomCardSuites extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard(IconData icon) {
+  Widget _buildFeatureCard(BuildContext context, List<ItemModel> items) {
+    HomePageProvider provider = context.read<HomePageProvider>();
+
+    List<IconData> icons = provider.mapItemsToIcons(items);
+    debugPrint(icons.toString());
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      margin: const EdgeInsets.symmetric(vertical: 3),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(9),
       ),
       child: SizedBox(
-        width: 300,
-        height: 50,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: _buildFeatureIcon(icon: icon),
+        width: 280,
+        height: 60,
+        child: Row(
+          spacing: 8,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildFeatureIcon(icon: icons[0]),
+            _buildFeatureIcon(icon: icons[1]),
+            _buildFeatureIcon(
+                label: 'ver todos', icon: Icons.keyboard_arrow_down),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildFeatureIcon({required IconData icon, String? label}) {
+    return label != null
+        ? ElevatedButton.icon(
+            onPressed: () {},
+            style: ButtonStyle(
+              fixedSize: WidgetStatePropertyAll(Size(100, 50)),
+              elevation: WidgetStatePropertyAll(0),
+              backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+            ),
+            iconAlignment: IconAlignment.end,
+            icon: Icon(
+              icon,
+              color: Colors.grey.shade600,
+            ),
+            label: Text(
+              'ver\ntodos',
+              maxLines: 2,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          )
+        : Container(
+            decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                icon,
+                size: 25,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          );
   }
 
   Widget _buildTimeAndPriceCard(String time, double price) {
@@ -161,24 +233,5 @@ class CustomCardSuites extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Widget _buildFeatureIcon({required IconData icon, String? label}) {
-    return label != null
-        ? GestureDetector(
-            onTap: () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text(
-                  'ver\ntodos',
-                  textAlign: TextAlign.end,
-                  style: TextStyle(fontSize: 12),
-                ),
-                Icon(icon),
-              ],
-            ),
-          )
-        : Icon(icon, size: 28);
   }
 }
