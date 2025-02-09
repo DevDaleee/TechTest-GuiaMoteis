@@ -3,13 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:techtest_guia_motel/data/provider/home_page_provider.dart';
 
 class CustomSwitcher extends StatelessWidget {
-  final ScreenSwitch chooseScreen;
+  final ScreenSwitch selected;
   final String label;
   final IconData icon;
 
   const CustomSwitcher({
     super.key,
-    required this.chooseScreen,
+    required this.selected,
     required this.label,
     required this.icon,
   });
@@ -17,10 +17,10 @@ class CustomSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomePageProvider provider = context.read<HomePageProvider>();
-    bool isSelected = provider.chooseScreen == chooseScreen;
+    bool isSelected = provider.chooseScreen == selected;
 
     return GestureDetector(
-      onTap: () => provider.chooseScreen = chooseScreen,
+      onTap: () => provider.chooseScreen = selected,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         transitionBuilder: (Widget child, Animation<double> animation) {
@@ -36,7 +36,7 @@ class CustomSwitcher extends StatelessWidget {
         },
         child: isSelected
             ? Container(
-                key: ValueKey(chooseScreen),
+                key: ValueKey(selected),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
@@ -62,7 +62,7 @@ class CustomSwitcher extends StatelessWidget {
                 ),
               )
             : Container(
-                key: ValueKey(chooseScreen),
+                key: ValueKey(selected),
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: Row(

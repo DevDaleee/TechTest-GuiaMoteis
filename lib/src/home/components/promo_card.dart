@@ -24,8 +24,9 @@ class PromoCard extends StatelessWidget {
     UtilsServices utils = UtilsServices();
     return SizedBox(
       height: 220,
-      width: MediaQuery.of(context).size.width * 0.99,
+      width: MediaQuery.of(context).size.width * 0.97,
       child: Card(
+        color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
         child: Padding(

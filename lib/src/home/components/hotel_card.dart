@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:techtest_guia_motel/data/provider/home_page_provider.dart';
+import 'package:techtest_guia_motel/models/category_item_models.dart';
 import 'package:techtest_guia_motel/models/motel_model.dart';
+import 'package:techtest_guia_motel/services/utils.dart';
 import 'package:techtest_guia_motel/src/home/components/suites_card.dart';
 
 class HotelCard extends StatelessWidget {
@@ -14,29 +18,28 @@ class HotelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (filter.isNotEmpty && filter != "Filtros") {
-      return const SizedBox.shrink();
-    }
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Padding(
-        padding: const EdgeInsets.all(22.0),
+    return Consumer<HomePageProvider>(
+      builder: (context, provider, _) => SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              spacing: 10,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(35),
-                  child: Image.network(
-                    motel.logoUrl ?? '',
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
+                Padding(
+                  padding: EdgeInsets.only(left: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(35),
+                    child: Image.network(
+                      motel.logoUrl ?? '',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,20 +58,22 @@ class HotelCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.favorite,
-                    color: Colors.grey,
+                    color: provider.favorite == true ? Colors.red : Colors.grey,
                     size: 38,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    provider.favorite = !provider.favorite;
+                  },
                 ),
               ],
             ),
-            const SizedBox(height: 10),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 60,
+                  width: 55,
                   height: 23,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
@@ -91,7 +96,6 @@ class HotelCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 10),
                 ElevatedButton.icon(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -102,7 +106,10 @@ class HotelCard extends StatelessWidget {
                     ),
                   ),
                   iconAlignment: IconAlignment.end,
-                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_outlined,
+                    color: Colors.black,
+                  ),
                   label: Text(
                     '${motel.reviews} avaliações',
                     style: const TextStyle(color: Colors.black, fontSize: 13),
@@ -110,24 +117,45 @@ class HotelCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 15),
             if (motel.suites != null && motel.suites!.isNotEmpty)
               ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxHeight: 350,
+                  maxHeight: MediaQuery.of(context).size.height * 0.49,
                 ),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   itemCount: motel.suites!.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10.0,
-                      ),
-                      child: CustomCardSuites(
-                        suites: motel.suites![index],
-                        suitesLenght: motel.suites!.length,
+                  itemBuilder: (context, suiteIndex) {
+                    return SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.78,
+                      child: SingleChildScrollView(
+                        physics: NeverScrollableScrollPhysics(),
+                        child: Column(
+                          children: [
+                            CustomCardSuites(
+                              suites: motel.suites![suiteIndex],
+                              suitesLenght: motel.suites!.length,
+                            ),
+                            _buildFeatureCard(context,
+                                motel.suites![suiteIndex].categoryItems!),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount:
+                                  motel.suites![suiteIndex].periods!.length,
+                              itemBuilder: (context, periodIndex) {
+                                return _buildTimeAndPriceCard(
+                                  context,
+                                  motel.suites![suiteIndex]
+                                      .periods![periodIndex].formattedTime!,
+                                  motel.suites![suiteIndex]
+                                      .periods![periodIndex].price!,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -136,6 +164,124 @@ class HotelCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFeatureCard(
+      BuildContext context, List<CategoryItemModel> items) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 3),
+      width: MediaQuery.of(context).size.width * 0.73,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: SizedBox(
+        width: 280,
+        height: 60,
+        child: Row(
+          spacing: 8,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildFeatureIcon(
+              iconUrl: items[0].iconUrl!,
+            ),
+            _buildFeatureIcon(iconUrl: items[1].iconUrl!),
+            ElevatedButton.icon(
+              onPressed: () {},
+              style: ButtonStyle(
+                fixedSize: WidgetStatePropertyAll(Size(100, 50)),
+                elevation: WidgetStatePropertyAll(0),
+                backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+              ),
+              iconAlignment: IconAlignment.end,
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: Colors.grey.shade600,
+              ),
+              label: Text(
+                'ver\ntodos',
+                maxLines: 2,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureIcon({required String iconUrl}) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.all(Radius.circular(8))),
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: SizedBox(
+          height: 12,
+          width: 12,
+          child: Image.network(
+            iconUrl,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeAndPriceCard(
+      BuildContext context, String time, double price) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      width: MediaQuery.of(context).size.width * 0.73,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: SizedBox(
+        width: 300,
+        height: 70,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: _buildTimeAndPrice(time: time, price: price),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeAndPrice({required String time, required double price}) {
+    UtilsServices utils = UtilsServices();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              time,
+              style: const TextStyle(fontSize: 17),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 9.0),
+              child: Text(
+                utils.priceToCurrency(price),
+                style: const TextStyle(fontSize: 17),
+              ),
+            ),
+          ],
+        ),
+        Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.grey.shade500,
+        ),
+      ],
     );
   }
 }
