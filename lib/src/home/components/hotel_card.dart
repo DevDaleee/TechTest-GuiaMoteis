@@ -19,150 +19,146 @@ class HotelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomePageProvider>(
-      builder: (context, provider, _) => SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              spacing: 10,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 5),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(35),
-                    child: Image.network(
-                      motel.logoUrl ?? '',
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
+      builder: (context, provider, _) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            spacing: 10,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(35),
+                  child: Image.network(
+                    motel.logoUrl ?? '',
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        motel.name ?? 'Nome não encontrado',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(motel.neighborhood ?? "Localização não encontrada"),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.favorite,
-                    color: provider.favorite == true ? Colors.red : Colors.grey,
-                    size: 38,
-                  ),
-                  onPressed: () {
-                    provider.favorite = !provider.favorite;
-                  },
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 55,
-                  height: 23,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: Colors.amber.shade700,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star, color: Colors.amber.shade700, size: 18),
-                      const SizedBox(width: 3),
-                      Text(
-                        '${motel.rate}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                  iconAlignment: IconAlignment.end,
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down_outlined,
-                    color: Colors.black,
-                  ),
-                  label: Text(
-                    '${motel.reviews} avaliações',
-                    style: const TextStyle(color: Colors.black, fontSize: 13),
-                  ),
-                ),
-              ],
-            ),
-            if (motel.suites != null && motel.suites!.isNotEmpty)
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.49,
-                ),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemCount: motel.suites!.length,
-                  itemBuilder: (context, suiteIndex) {
-                    return SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.78,
-                      child: SingleChildScrollView(
-                        physics: NeverScrollableScrollPhysics(),
-                        child: Column(
-                          children: [
-                            CustomCardSuites(
-                              suites: motel.suites![suiteIndex],
-                              suitesLenght: motel.suites!.length,
-                            ),
-                            _buildFeatureCard(context,
-                                motel.suites![suiteIndex].categoryItems!),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  motel.suites![suiteIndex].periods!.length,
-                              itemBuilder: (context, periodIndex) {
-                                return _buildTimeAndPriceCard(
-                                  context,
-                                  motel.suites![suiteIndex]
-                                      .periods![periodIndex].formattedTime!,
-                                  motel.suites![suiteIndex]
-                                      .periods![periodIndex].price!,
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
                 ),
               ),
-          ],
-        ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      motel.name ?? 'Nome não encontrado',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(motel.neighborhood ?? "Localização não encontrada"),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.favorite,
+                  color: provider.favorite == true ? Colors.red : Colors.grey,
+                  size: 38,
+                ),
+                onPressed: () {
+                  provider.favorite = !provider.favorite;
+                },
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 55,
+                height: 23,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: Colors.amber.shade700,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.star, color: Colors.amber.shade700, size: 18),
+                    const SizedBox(width: 3),
+                    Text(
+                      '${motel.rate}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                iconAlignment: IconAlignment.end,
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_outlined,
+                  color: Colors.black,
+                ),
+                label: Text(
+                  '${motel.reviews} avaliações',
+                  style: const TextStyle(color: Colors.black, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+          if (motel.suites != null && motel.suites!.isNotEmpty)
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.65,
+              ),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: motel.suites!.length,
+                itemBuilder: (context, suiteIndex) {
+                  return SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.78,
+                    child: SingleChildScrollView(
+                      physics: NeverScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          CustomCardSuites(
+                            suites: motel.suites![suiteIndex],
+                            suitesLenght: motel.suites!.length,
+                          ),
+                          _buildFeatureCard(context,
+                              motel.suites![suiteIndex].categoryItems!),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount:
+                                motel.suites![suiteIndex].periods!.length,
+                            itemBuilder: (context, periodIndex) {
+                              return _buildTimeAndPriceCard(
+                                context,
+                                motel.suites![suiteIndex].periods![periodIndex]
+                                    .formattedTime!,
+                                motel.suites![suiteIndex].periods![periodIndex]
+                                    .price!,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -217,15 +213,20 @@ class HotelCard extends StatelessWidget {
 
   Widget _buildFeatureIcon({required String iconUrl}) {
     return Container(
+      height: 50,
+      width: 50,
       decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.all(Radius.circular(8))),
       child: Padding(
         padding: EdgeInsets.all(8),
-        child: SizedBox(
-          height: 12,
-          width: 12,
+        child: Container(
+          constraints: BoxConstraints(
+            minWidth: 30,
+            minHeight: 30,
+          ),
           child: Image.network(
+            scale: 1,
             iconUrl,
             color: Colors.grey.shade600,
           ),
