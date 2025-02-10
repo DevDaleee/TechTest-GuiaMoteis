@@ -9,7 +9,8 @@ import 'package:techtest_guia_motel/src/home/components/location_filter.dart';
 import 'package:techtest_guia_motel/src/home/components/promo_card.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final MotelServices motelServices;
+  const HomePage({super.key, required this.motelServices});
 
   @override
   HomePageState createState() => HomePageState();
@@ -66,19 +67,32 @@ class HomePageState extends State<HomePage> {
   void applyFilter(String filter) {
     List<MotelModel> tempList = [];
 
-    if (filter == "com desconto") {
-      tempList = motelsWithDiscount ?? [];
-    } else if (filter == "disponíveis") {
-      tempList = motels.where((motel) {
-        return motel.suites != null &&
-            motel.suites!.isNotEmpty &&
-            motel.suites!
-                .any((suite) => suite.quantity != null && suite.quantity! > 0);
-      }).toList();
-    } else {
-      tempList = List.from(motels);
-    }
+    tempList = motels.where((motel) {
+      if (motel.suites == null || motel.suites!.isEmpty) return false;
 
+      switch (filter) {
+        case 'com desconto':
+          return motel.suites!.any((suite) => suite.periods!.any(
+              (period) => period.discount != null && period.discount! > 0));
+
+        case 'disponíveis':
+          return motel.suites!
+              .any((suite) => suite.quantity != null && suite.quantity! > 0);
+
+        case 'hidro':
+          return motel.suites!.any((suite) => suite.categoryItems!.any(
+              (category) => category.name!.toLowerCase().contains('hidro')));
+
+        case 'piscina':
+          return motel.suites!.any((suite) => suite.categoryItems!.any(
+              (category) => category.name!.toLowerCase().contains('piscina')));
+
+        default:
+          return true;
+      }
+    }).toList();
+    debugPrint(filteredMotels.length.toString());
+    debugPrint(selectedFilter);
     setState(() {
       selectedFilter = filter;
       filteredMotels = tempList;
@@ -193,6 +207,16 @@ class HomePageState extends State<HomePage> {
                                   onSelected: (_) {},
                                 ),
                                 FilterChip(
+                                  label: Text("Hidro"),
+                                  selected: selectedFilter == 'hidro',
+                                  onSelected: (_) => applyFilter("hidro"),
+                                ),
+                                FilterChip(
+                                  label: Text("Piscina"),
+                                  selected: selectedFilter == 'piscina',
+                                  onSelected: (_) => applyFilter("piscina"),
+                                ),
+                                FilterChip(
                                   label: Text("com desconto"),
                                   selected: selectedFilter == 'com desconto',
                                   onSelected: (_) =>
@@ -241,7 +265,7 @@ class HomePageState extends State<HomePage> {
             top: 0,
             child: Container(
               width: MediaQuery.of(context).size.width,
-              height: 60,
+              height: 55,
               color: Color(0xFFd11621),
               child: LocationFilter(),
             ),

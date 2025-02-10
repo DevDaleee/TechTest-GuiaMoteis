@@ -124,6 +124,36 @@ class HotelCard extends StatelessWidget {
                 shrinkWrap: true,
                 itemCount: motel.suites!.length,
                 itemBuilder: (context, suiteIndex) {
+                  final suite = motel.suites![suiteIndex];
+
+                  bool matchesCategoryFilter() {
+                    switch (filter) {
+                      case 'hidro':
+                        return suite.categoryItems!.any((category) =>
+                            category.name!.toLowerCase().contains('hidro'));
+                      case 'piscina':
+                        return suite.categoryItems!.any((category) =>
+                            category.name!.toLowerCase().contains('piscina'));
+                      default:
+                        return true;
+                    }
+                  }
+
+                  if (filter == "disponíveis" &&
+                      (suite.quantity == null || suite.quantity! <= 0)) {
+                    return SizedBox.shrink();
+                  }
+
+                  if (filter == "com desconto" &&
+                      !suite.periods!.any((period) =>
+                          period.discount != null && period.discount! > 0)) {
+                    return SizedBox.shrink();
+                  }
+
+                  if (!matchesCategoryFilter()) {
+                    return SizedBox.shrink();
+                  }
+
                   return SizedBox(
                     width: MediaQuery.of(context).size.width * 0.78,
                     child: SingleChildScrollView(
@@ -131,23 +161,19 @@ class HotelCard extends StatelessWidget {
                       child: Column(
                         children: [
                           CustomCardSuites(
-                            suites: motel.suites![suiteIndex],
+                            suites: suite,
                             suitesLenght: motel.suites!.length,
                           ),
-                          _buildFeatureCard(context,
-                              motel.suites![suiteIndex].categoryItems!),
+                          _buildFeatureCard(context, suite.categoryItems!),
                           ListView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            itemCount:
-                                motel.suites![suiteIndex].periods!.length,
+                            itemCount: suite.periods!.length,
                             itemBuilder: (context, periodIndex) {
                               return _buildTimeAndPriceCard(
                                 context,
-                                motel.suites![suiteIndex].periods![periodIndex]
-                                    .formattedTime!,
-                                motel.suites![suiteIndex].periods![periodIndex]
-                                    .price!,
+                                suite.periods![periodIndex].formattedTime!,
+                                suite.periods![periodIndex].price!,
                               );
                             },
                           ),
