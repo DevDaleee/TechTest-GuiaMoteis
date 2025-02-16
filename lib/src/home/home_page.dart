@@ -233,25 +233,22 @@ class HomePageState extends State<HomePage> {
                           Divider(
                             color: Colors.grey.withAlpha(60),
                           ),
-                          Expanded(
-                            flex: 0,
-                            child: ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: filteredMotels.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0,
-                                    horizontal: 16.0,
-                                  ),
-                                  child: HotelCard(
-                                    filter: selectedFilter,
-                                    motel: filteredMotels[index],
-                                  ),
-                                );
-                              },
-                            ),
+                          ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: filteredMotels.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                  horizontal: 16.0,
+                                ),
+                                child: HotelCard(
+                                  filter: selectedFilter,
+                                  motel: filteredMotels[index],
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),

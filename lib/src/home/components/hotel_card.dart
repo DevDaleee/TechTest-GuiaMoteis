@@ -117,7 +117,9 @@ class HotelCard extends StatelessWidget {
           if (motel.suites != null && motel.suites!.isNotEmpty)
             ConstrainedBox(
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.65,
+                maxHeight: MediaQuery.of(context).size.height < 830
+                    ? MediaQuery.of(context).size.height * 0.8
+                    : MediaQuery.of(context).size.height * 0.7,
               ),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
