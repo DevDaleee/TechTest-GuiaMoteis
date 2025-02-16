@@ -52,6 +52,7 @@ class CustomSwitcher extends StatelessWidget {
                     ),
                     Text(
                       label,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -74,6 +75,7 @@ class CustomSwitcher extends StatelessWidget {
                     ),
                     Text(
                       label,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white,

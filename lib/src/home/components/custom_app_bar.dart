@@ -17,6 +17,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      titleSpacing: 10,
       backgroundColor: Color(0xFFd11621),
       elevation: 0,
       iconTheme: IconThemeData(color: Colors.white),
@@ -27,7 +28,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             color: Colors.black.withAlpha(30),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
               CustomSwitcher(
                 selected: ScreenSwitch.IRAGORA,
